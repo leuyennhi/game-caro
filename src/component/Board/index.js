@@ -4,19 +4,21 @@ import Square from '../Square/index';
 import './style.css';
 
 export default class Board extends React.Component {
+    
     renderSquare(i) {
+        const {board} = this.props;
         return (
             <Square
-                value={this.props.squares[i]}
-                onClick={() => this.props.onClick(i)}
+                value={board.squares[i]}
+                onClick={() => board.onClick(i)}
                 id={i}
             />
         );
     }
 
     render() {
-        var board = [];
-        for (let i = 0; i < 20; i++) {
+        const board = [];
+        for (let i = 0; i < 20; i+=1) {
             board.push(<div className="board-row">
                 {this.renderSquare(0 + 20 * i)}
                 {this.renderSquare(1 + 20 * i)}

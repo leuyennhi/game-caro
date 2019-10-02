@@ -118,7 +118,7 @@ export default class App extends React.Component {
           <div className="game">
             <div>
               <div className="status-component">
-                <div className="status">{status}</div>
+                <div>{status}</div>
                 <button className="restart-button" onClick={() => this.restartClick()}>
                   Restart
                 </button>
