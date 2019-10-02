@@ -6,11 +6,11 @@ import './style.css';
 export default class Board extends React.Component {
     
     renderSquare(i) {
-        const {board} = this.props;
+        const {squares, onClick} = this.props;
         return (
             <Square
-                value={board.squares[i]}
-                onClick={() => board.onClick(i)}
+                value={squares[i]}
+                onClick={() => onClick(i)}
                 id={i}
             />
         );

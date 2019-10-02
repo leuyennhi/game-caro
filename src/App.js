@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 import React from 'react';
 import Board from './component/Board/index';
 import './App.css';
@@ -18,21 +19,22 @@ export default class App extends React.Component {
   }
 
   handleClick(i) {
-    const history = this.state.history.slice(0, this.state.stepNumber + 1);
+    const {history, stepNumber, xIsNext, currentCell} = this.state;
+    const history1 = history.slice(0,stepNumber + 1);
     const current = history[history.length - 1];
-    const squares = current.squares.slice();
+    const currentSquares = current.squares.slice();
 
-    if (calculateWinner(squares, this.state.currentCell) || squares[i]) {
+    if (calculateWinner(currentSquares, currentCell) || currentSquares[i]) {
       return;
     }
-    squares[i] = this.state.xIsNext ? 'X' : 'O';
+    currentSquares[i] = xIsNext ? 'X' : 'O';
     this.setState({
-      history: history.concat([{
-        squares: squares,
+      history: history1.concat([{
+        squares: currentSquares,
         historyCell: i,
       }]),
       stepNumber: history.length,
-      xIsNext: !this.state.xIsNext,
+      xIsNext: !xIsNext,
       currentCell: i,
     });
 
@@ -55,8 +57,9 @@ export default class App extends React.Component {
   }
 
   jumpTo(step) {
-    const stepCell = this.state.history[step].historyCell;
-
+    const {history} = this.state;
+    const stepCell = history[step].historyCell;
+    
     this.setState({
       stepNumber: step,
       xIsNext: (step % 2) === 0,
@@ -68,48 +71,49 @@ export default class App extends React.Component {
   }
 
   sortStep() {
+    const {isStepAsc} = this.state;
     this.setState({
-      isStepAsc: !this.state.isStepAsc
+      isStepAsc: !isStepAsc
     })
   }
 
   render() {
-
-    const history = this.state.history;
-    const current = history[this.state.stepNumber];
-
+    const {history, stepNumber, isStepAsc, currentCell, xIsNext} = this.state;
+    const current = history[stepNumber];
+    const stringStep = 'Go to move #';
     const moves = history.map((step, move) => {
-      var move_num = 0;
+      let moveNum = 0;
 
       if (move) {
-        if (this.state.isStepAsc) {
-          move_num = move;
+        if (isStepAsc) {
+          moveNum = move;
         }
         else {
-          move_num = history.length - move;
+          moveNum = history.length - move;
         }
       }
 
       const desc = move ?
-        'Go to move #' + move_num :
+        stringStep + moveNum :
         'Go to game start';
       return (
+        // eslint-disable-next-line react/no-array-index-key
         <li key={move}>
-          <button className={this.state.stepNumber === move_num ? "step-active-button" : "step-button"} onClick={() => this.jumpTo(move_num)}>{desc}</button>
+          <button type="button" className={stepNumber === moveNum ? "step-active-button" : "step-button"} onClick={() => this.jumpTo(moveNum)}>{desc}</button>
         </li>
       );
     });
 
-    const winner = calculateWinner(current.squares, this.state.currentCell);
+    const winner = calculateWinner(current.squares, currentCell);
 
     let status;
     if (winner) {
-      status = 'Winner: ' + winner.winner;
+      status = `Winner: ${  winner.winner}`;
       winner.result.forEach(element => {
         document.getElementById(element).style.color = "#eb0808";
       });
     } else {
-      status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
+      status = `Next player: ${  xIsNext ? 'X' : 'O'}`;
     }
     return (
       <div className="App">
@@ -119,7 +123,7 @@ export default class App extends React.Component {
             <div>
               <div className="status-component">
                 <div>{status}</div>
-                <button className="restart-button" onClick={() => this.restartClick()}>
+                <button type="button" className="restart-button" onClick={() => this.restartClick()}>
                   Restart
                 </button>
               </div>
@@ -132,7 +136,7 @@ export default class App extends React.Component {
               </div>
             </div>
             <div className="step-component">
-              <button onClick={() => this.sortStep()}> {this.state.isStepAsc ? "Asc" : "Desc"} </button>
+              <button type="button" onClick={() => this.sortStep()}> {isStepAsc ? "Asc" : "Desc"} </button>
               <ol>{moves}</ol>
             </div>
           </div>
@@ -142,37 +146,37 @@ export default class App extends React.Component {
   }
 }
 
-//kiem tra hang ngang
+// kiem tra hang ngang
 function checkHorizontal(squares, i) {
-  var count_left = 0;
-  var count_right = 0;
-  var result = [i];
-  //di sang trai
-  for (let j = i - 1; ; j--) {
+  let countLeft = 0;
+  let countRight = 0;
+  const result = [i];
+  // di sang trai
+  for (let j = i - 1; ; j-=1) {
 
-    if (j < [parseInt(i / 20) * 20]) {
+    if (j < [i / 20 * 20]) {
       break;
     }
 
     if (squares[j] === squares[i]) {
       result.push(j);
-      count_left++;
+      countLeft+=1;
     }
     else {
       break;
     }
 
   }
-  //di sang phai
-  for (let j = i + 1; ; j++) {
+  // di sang phai
+  for (let j = i + 1; ; j+=1) {
 
-    if (j >= [parseInt(i / 20) + 1] * 20) {
+    if (j >= [i / 20 + 1] * 20) {
       break;
     }
 
     if (squares[j] === squares[i]) {
       result.push(j);
-      count_right++;
+      countRight+=1;
     }
     else {
       break;
@@ -180,25 +184,25 @@ function checkHorizontal(squares, i) {
 
   }
 
-  if ((count_left + count_right) >= 4) {
-    //kiem tra chan 2 dau
-    if ((i - count_left) === [parseInt(i / 20) * 20] || (i + count_right) === ([parseInt(i / 20) + 1] * 20 - 1)) {
-      return { winner: squares[i], result: result };
+  if ((countLeft + countRight) >= 4) {
+    // kiem tra chan 2 dau
+    if ((i - countLeft) === [i / 20 * 20] || (i + countRight) === ([i / 20 + 1] * 20 - 1)) {
+      return { winner: squares[i], result };
     }
 
-    if (squares[i - count_left - 1] === null || squares[i + count_right + 1] === null) {
-      return { winner: squares[i], result: result };
+    if (squares[i - countLeft - 1] === null || squares[i + countRight + 1] === null) {
+      return { winner: squares[i], result };
     }
   }
 
   return null;
 }
-//kiem tra hang doc
+// kiem tra hang doc
 function checkVertical(squares, i) {
-  var count_up = 0;
-  var count_down = 0;
-  var result = [i];
-  //di len
+  let countUp = 0;
+  let countDown = 0;
+  const result = [i];
+  // di len
   for (let j = i - 20; ;) {
 
     if (j < 0) {
@@ -206,7 +210,7 @@ function checkVertical(squares, i) {
     }
 
     if (squares[j] === squares[i]) {
-      count_up++;
+      countUp+=1;
       result.push(j);
       j -= 20;
     }
@@ -215,7 +219,7 @@ function checkVertical(squares, i) {
     }
 
   }
-  //di xuong
+  // di xuong
   for (let j = i + 20; ;) {
 
     if (j >= 400) {
@@ -223,7 +227,7 @@ function checkVertical(squares, i) {
     }
 
     if (squares[j] === squares[i]) {
-      count_down++;
+      countDown+=1;
       result.push(j);
       j += 20;
     }
@@ -233,25 +237,25 @@ function checkVertical(squares, i) {
 
   }
 
-  if ((count_up + count_down) >= 4) {
-    //kiem tra chan 2 dau
-    if ((i - count_up * 20) < 20 || (i + count_down * 20) > 379) {
-      return { winner: squares[i], result: result };
+  if ((countUp + countDown) >= 4) {
+    // kiem tra chan 2 dau
+    if ((i - countUp * 20) < 20 || (i + countDown * 20) > 379) {
+      return { winner: squares[i], result };
     }
 
-    if (squares[i - count_up * 20 - 20] === null || squares[i + count_down * 20 + 20] === null) {
-      return { winner: squares[i], result: result };
+    if (squares[i - countUp * 20 - 20] === null || squares[i + countDown * 20 + 20] === null) {
+      return { winner: squares[i], result };
     }
   }
 
   return null;
 }
-//kiem tra duong cheo phu
+// kiem tra duong cheo phu
 function checkDiagonal(squares, i) {
-  var count_right_up = 0;
-  var count_left_down = 0;
-  var result = [i];
-  //di len sang phai
+  let countRightUp = 0;
+  let countLeftDown = 0;
+  const result = [i];
+  // di len sang phai
   for (let j = i - (20 - 1); ;) {
 
     if (j % 20 === 0 || j < 0) {
@@ -259,7 +263,7 @@ function checkDiagonal(squares, i) {
     }
 
     if (squares[j] === squares[i]) {
-      count_right_up++;
+      countRightUp+=1;
       result.push(j);
       j -= (20 - 1);
     }
@@ -268,14 +272,14 @@ function checkDiagonal(squares, i) {
     }
 
   }
-  //di xuong sang trai
+  // di xuong sang trai
   for (let j = i + (20 - 1); ;) {
     if (j % 20 === 19 || j >= 400) {
       break;
     }
 
     if (squares[j] === squares[i]) {
-      count_left_down++;
+      countLeftDown+=1;
       result.push(j);
       j += (20 - 1);
     }
@@ -285,25 +289,25 @@ function checkDiagonal(squares, i) {
 
   }
 
-  if ((count_right_up + count_left_down) >= 4) {
-    //kiem tra chan 2 dau
-    if ((i - count_right_up * 19) % 20 === 19 || (i + count_left_down * 19) % 20 === 0) {
-      return { winner: squares[i], result: result };
+  if ((countRightUp + countLeftDown) >= 4) {
+    // kiem tra chan 2 dau
+    if ((i - countRightUp * 19) % 20 === 19 || (i + countLeftDown * 19) % 20 === 0) {
+      return { winner: squares[i], result };
     }
 
-    if (squares[i - count_right_up * 19 - 19] === null || squares[i + count_left_down * 19 + 19] === null) {
-      return { winner: squares[i], result: result };
+    if (squares[i - countRightUp * 19 - 19] === null || squares[i + countLeftDown * 19 + 19] === null) {
+      return { winner: squares[i], result };
     }
   }
 
   return null;
 }
-//kiem tra duong cheo chinh
+// kiem tra duong cheo chinh
 function checkMainDiagonal(squares, i) {
-  var count_left_up = 0;
-  var count_right_down = 0;
-  var result = [i];
-  //di len sang trai
+  let countLeftUp = 0;
+  let countRightDown = 0;
+  const result = [i];
+  // di len sang trai
   for (let j = i - (20 + 1); ;) {
 
     if (j % 20 === 19 || j < 0) {
@@ -311,7 +315,7 @@ function checkMainDiagonal(squares, i) {
     }
 
     if (squares[j] === squares[i]) {
-      count_left_up++;
+      countLeftUp+=1;
       result.push(j);
       j -= (20 + 1);
     }
@@ -320,7 +324,7 @@ function checkMainDiagonal(squares, i) {
     }
 
   }
-  //di xuong sang phai
+  // di xuong sang phai
   for (let j = i + (20 + 1); ;) {
 
     if (j % 20 === 0 || j >= 400) {
@@ -328,7 +332,7 @@ function checkMainDiagonal(squares, i) {
     }
 
     if (squares[j] === squares[i]) {
-      count_right_down++;
+      countRightDown+=1;
       result.push(j);
       j += (20 + 1);
     }
@@ -338,14 +342,14 @@ function checkMainDiagonal(squares, i) {
 
   }
 
-  if ((count_left_up + count_right_down) >= 4) {
-    //kiem tra chan 2 dau
-    if ((i - count_left_up * 19) % 20 === 0 || (i + count_right_down * 19) % 20 === 19) {
-      return { winner: squares[i], result: result }
+  if ((countLeftUp + countRightDown) >= 4) {
+    // kiem tra chan 2 dau
+    if ((i - countLeftUp * 19) % 20 === 0 || (i + countRightDown * 19) % 20 === 19) {
+      return { winner: squares[i], result }
     }
 
-    if (squares[i - count_left_up * 21 - 21] === null || squares[i + count_right_down * 21 + 21] === null) {
-      return { winner: squares[i], result: result }
+    if (squares[i - countLeftUp * 21 - 21] === null || squares[i + countRightDown * 21 + 21] === null) {
+      return { winner: squares[i], result }
     }
   }
 
@@ -356,13 +360,13 @@ function calculateWinner(squares, i) {
   if (checkHorizontal(squares, i)) {
     return checkHorizontal(squares, i);
   }
-  else if (checkVertical(squares, i)) {
+  if (checkVertical(squares, i)) {
     return checkVertical(squares, i);
   }
-  else if (checkDiagonal(squares, i)) {
+  if (checkDiagonal(squares, i)) {
     return checkDiagonal(squares, i);
   }
-  else if (checkMainDiagonal(squares, i)) {
+  if (checkMainDiagonal(squares, i)) {
     return checkMainDiagonal(squares, i);
   }
   return null;
