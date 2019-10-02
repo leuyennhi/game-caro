@@ -40,7 +40,7 @@
   margin: 0 0 20px 0;
 }
 
-.restart-button {
+.button {
   height: 30px;
   width: 100px;
   color: black;
@@ -77,6 +77,8 @@
   height: 25px;
   width: 150px;
   margin: 5px 0 0 0;
+  background: transparent;
+  border: 0px;
 }
 
 .step-button:hover {
@@ -89,4 +91,6 @@
   font-weight: bold;
   color: #eb0808;
   margin: 5px 0 0 0;
+  background: transparent;
+  border: 0px;
 }

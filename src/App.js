@@ -20,8 +20,8 @@ export default class App extends React.Component {
 
   handleClick(i) {
     const {history, stepNumber, xIsNext, currentCell} = this.state;
-    const history1 = history.slice(0,stepNumber + 1);
-    const current = history[history.length - 1];
+    const historyToSave = history.slice(0,stepNumber + 1);
+    const current = historyToSave[historyToSave.length - 1];
     const currentSquares = current.squares.slice();
 
     if (calculateWinner(currentSquares, currentCell) || currentSquares[i]) {
@@ -29,11 +29,11 @@ export default class App extends React.Component {
     }
     currentSquares[i] = xIsNext ? 'X' : 'O';
     this.setState({
-      history: history1.concat([{
+      history: historyToSave.concat([{
         squares: currentSquares,
         historyCell: i,
       }]),
-      stepNumber: history.length,
+      stepNumber: historyToSave.length,
       xIsNext: !xIsNext,
       currentCell: i,
     });
@@ -59,7 +59,7 @@ export default class App extends React.Component {
   jumpTo(step) {
     const {history} = this.state;
     const stepCell = history[step].historyCell;
-    
+
     this.setState({
       stepNumber: step,
       xIsNext: (step % 2) === 0,
@@ -108,9 +108,9 @@ export default class App extends React.Component {
 
     let status;
     if (winner) {
-      status = `Winner: ${  winner.winner}`;
+      status = `Winner: ${winner.winner}`;
       winner.result.forEach(element => {
-        document.getElementById(element).style.color = "#eb0808";
+        document.getElementById(element).style.color = "yellow";
       });
     } else {
       status = `Next player: ${  xIsNext ? 'X' : 'O'}`;
@@ -123,7 +123,7 @@ export default class App extends React.Component {
             <div>
               <div className="status-component">
                 <div>{status}</div>
-                <button type="button" className="restart-button" onClick={() => this.restartClick()}>
+                <button type="button" className="button" onClick={() => this.restartClick()}>
                   Restart
                 </button>
               </div>
@@ -136,7 +136,7 @@ export default class App extends React.Component {
               </div>
             </div>
             <div className="step-component">
-              <button type="button" onClick={() => this.sortStep()}> {isStepAsc ? "Asc" : "Desc"} </button>
+              <button type="button" className="button" onClick={() => this.sortStep()}> {isStepAsc ? "Asc" : "Desc"} </button>
               <ol>{moves}</ol>
             </div>
           </div>
@@ -154,7 +154,7 @@ function checkHorizontal(squares, i) {
   // di sang trai
   for (let j = i - 1; ; j-=1) {
 
-    if (j < [i / 20 * 20]) {
+    if (j < [parseInt(i / 20, 10) * 20]) {
       break;
     }
 
@@ -170,7 +170,7 @@ function checkHorizontal(squares, i) {
   // di sang phai
   for (let j = i + 1; ; j+=1) {
 
-    if (j >= [i / 20 + 1] * 20) {
+    if (j >= [parseInt(i / 20, 10) + 1] * 20) {
       break;
     }
 
@@ -186,7 +186,7 @@ function checkHorizontal(squares, i) {
 
   if ((countLeft + countRight) >= 4) {
     // kiem tra chan 2 dau
-    if ((i - countLeft) === [i / 20 * 20] || (i + countRight) === ([i / 20 + 1] * 20 - 1)) {
+    if ((i - countLeft) === [parseInt(i / 20, 10) * 20] || (i + countRight) === ([parseInt(i / 20, 10) + 1] * 20 - 1)) {
       return { winner: squares[i], result };
     }
 
