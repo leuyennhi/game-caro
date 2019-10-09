@@ -10,30 +10,34 @@ const initialState = {
     isStepAsc: true,
 }
 
-const createGame = (state = initialState, action) => {
+const game = (state = initialState, action) => {
     switch (action.type) {
-        case 'ADD_HISTORY':
+        case 'MODIFIED_HISTORY': {
             return {
                 ...state,
-                history: state.history.concat([{
-                    squares: action.data
+                history: action.history.concat([{
+                    squares: action.squares,
+                    historyCell: action.i
                 }]),
-            }
-        case 'RESTART':{
-            const historyDefault = [{
-                squares: Array(400).fill(null),
-                historyCell: null,
-            }];
-            return {
-                ...state,
-                history: historyDefault
+                stepNumber: action.history.length,
+                xIsNext: !state.xIsNext,
+                currentCell: action.i,
             }
         }
-        case 'MODIFIED_HISTORY':
+            
+        case 'RESTART':{
             return {
                 ...state,
-                history: action.history
+                history: [{
+                    squares: Array(400).fill(null),
+                    historyCell: null,
+                }],
+                stepNumber: 0,
+                xIsNext: true,
+                currentCell: null,
+                isStepAsc: true,
             }
+        }
         case 'CHOOSE_STEP':
             return {
                 ...state,
@@ -51,4 +55,4 @@ const createGame = (state = initialState, action) => {
     }
 }
 
-export default createGame;
+export default game;

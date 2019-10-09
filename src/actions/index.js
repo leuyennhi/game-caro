@@ -1,17 +1,15 @@
 
-export const addHistory = data => ({
-    type: 'ADD_HISTORY',
-    data
+export const ModifiedHistory = (history, squares, i )=> ({
+    type: 'MODIFIED_HISTORY',
+    history,
+    squares,
+    i
 })
 
-export const restart = () => ({
+export const Restart = () => ({
     type: 'RESTART'
 })
 
-export const ModifiedHistory = history => ({
-    type: 'MODIFIED_HISTORY',
-    history
-})
 
 export const ChooseStep= step => ({
     type: 'CHOOSE_STEP', 

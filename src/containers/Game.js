@@ -1,9 +1,13 @@
+/* eslint-disable react/destructuring-assignment */
 /* eslint-disable no-use-before-define */
 import React from 'react';
+// eslint-disable-next-line import/no-unresolved
+import{ connect } from 'react-redux';
 import Board from '../components/Board/index';
 import './Game.css';
+import {ModifiedHistory, Restart, ChooseStep, ChangeTypeSort } from '../actions/index';
 
-export default class Game extends React.Component {
+class Game extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -20,7 +24,7 @@ export default class Game extends React.Component {
 
   handleClick(i) {
     const {history, stepNumber, xIsNext, currentCell} = this.state;
-    const historyToSave = history.slice(0,stepNumber + 1);
+    const historyToSave = history.slice(0, stepNumber + 1);
     const current = historyToSave[historyToSave.length - 1];
     const currentSquares = current.squares.slice();
 
@@ -28,6 +32,8 @@ export default class Game extends React.Component {
       return;
     }
     currentSquares[i] = xIsNext ? 'X' : 'O';
+    /* this.props.modifiedHistory(historyToSave, currentSquares, i); */
+
     this.setState({
       history: historyToSave.concat([{
         squares: currentSquares,
@@ -41,6 +47,8 @@ export default class Game extends React.Component {
   }
 
   restartClick() {
+   /* this.props.restart(); */
+    
     this.setState({
       history: [{
         squares: Array(400).fill(null),
@@ -51,30 +59,37 @@ export default class Game extends React.Component {
       currentCell: null,
       isStepAsc: true,
     });
-
+  
     const board = document.getElementsByClassName('square');
     Array.prototype.forEach.call(board, (item) => item.removeAttribute('style'));
   }
 
   jumpTo(step) {
+   /* this.props.chooseStep(step); */
+    
     const {history} = this.state;
     const stepCell = history[step].historyCell;
 
+    
     this.setState({
       stepNumber: step,
       xIsNext: (step % 2) === 0,
       currentCell: stepCell,
     });
-
+  
     const board = document.getElementsByClassName('square');
     Array.prototype.forEach.call(board, (item) => item.removeAttribute('style'));
   }
 
   sortStep() {
+    /*
+    this.props.changeTypeSort();
+    */
+    
     const {isStepAsc} = this.state;
     this.setState({
       isStepAsc: !isStepAsc
-    })
+    }) 
   }
 
   render() {
@@ -110,7 +125,7 @@ export default class Game extends React.Component {
     if (winner) {
       status = `Winner: ${winner.winner}`;
       winner.result.forEach(element => {
-        document.getElementById(element).style.color = "yellow";
+        document.getElementById(element).style.color = "#eb0808";
       });
     } else {
       status = `Next player: ${  xIsNext ? 'X' : 'O'}`;
@@ -145,6 +160,23 @@ export default class Game extends React.Component {
     );
   }
 }
+
+const mapStateToProps = (state) => ({
+  history: state.game.history,
+  stepNumber: state.game.stepNumber,
+  xIsNext: state.game.xIsNext,
+  currentCell: state.game.currentCell,
+  isStepAsc: state.game.isStepAsc,
+})
+
+const mapDispatchToProps = (dispatch) => ({
+  modifiedHistory: (history, squares, i) => dispatch(ModifiedHistory(history, squares, i)),
+  restart: () => dispatch(Restart()),
+  chooseStep: (step) => dispatch(ChooseStep(step)),
+  changeTypeSort: () => dispatch(ChangeTypeSort())
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Game)
 
 // kiem tra hang ngang
 function checkHorizontal(squares, i) {
