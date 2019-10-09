@@ -1,9 +1,9 @@
 /* eslint-disable no-use-before-define */
 import React from 'react';
 import Board from '../components/Board/index';
-import './App.css';
+import './Game.css';
 
-export default class App extends React.Component {
+export default class Game extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
