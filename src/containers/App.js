@@ -1,6 +1,6 @@
 /* eslint-disable no-use-before-define */
 import React from 'react';
-import Board from './component/Board/index';
+import Board from '../components/Board/index';
 import './App.css';
 
 export default class App extends React.Component {
