@@ -8,22 +8,9 @@ import './Game.css';
 import {ModifiedHistory, Restart, ChooseStep, ChangeTypeSort } from '../actions/index';
 
 class Game extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      history: [{
-        squares: Array(400).fill(null),
-        historyCell: null,
-      }],
-      stepNumber: 0,
-      xIsNext: true,
-      currentCell: null,
-      isStepAsc: true,
-    };
-  }
-
+ 
   handleClick(i) {
-    const {history, stepNumber, xIsNext, currentCell} = this.state;
+    const {history, stepNumber, xIsNext, currentCell} = this.props; 
     const historyToSave = history.slice(0, stepNumber + 1);
     const current = historyToSave[historyToSave.length - 1];
     const currentSquares = current.squares.slice();
@@ -32,68 +19,28 @@ class Game extends React.Component {
       return;
     }
     currentSquares[i] = xIsNext ? 'X' : 'O';
-    /* this.props.modifiedHistory(historyToSave, currentSquares, i); */
 
-    this.setState({
-      history: historyToSave.concat([{
-        squares: currentSquares,
-        historyCell: i,
-      }]),
-      stepNumber: historyToSave.length,
-      xIsNext: !xIsNext,
-      currentCell: i,
-    });
-
+    this.props.modifiedHistory(historyToSave, currentSquares, i); 
   }
 
   restartClick() {
-   /* this.props.restart(); */
-    
-    this.setState({
-      history: [{
-        squares: Array(400).fill(null),
-        historyCell: null,
-      }],
-      stepNumber: 0,
-      xIsNext: true,
-      currentCell: null,
-      isStepAsc: true,
-    });
-  
+    this.props.restart(); 
     const board = document.getElementsByClassName('square');
     Array.prototype.forEach.call(board, (item) => item.removeAttribute('style'));
   }
 
   jumpTo(step) {
-   /* this.props.chooseStep(step); */
-    
-    const {history} = this.state;
-    const stepCell = history[step].historyCell;
-
-    
-    this.setState({
-      stepNumber: step,
-      xIsNext: (step % 2) === 0,
-      currentCell: stepCell,
-    });
-  
+    this.props.chooseStep(step);
     const board = document.getElementsByClassName('square');
     Array.prototype.forEach.call(board, (item) => item.removeAttribute('style'));
   }
 
   sortStep() {
-    /*
     this.props.changeTypeSort();
-    */
-    
-    const {isStepAsc} = this.state;
-    this.setState({
-      isStepAsc: !isStepAsc
-    }) 
   }
 
   render() {
-    const {history, stepNumber, isStepAsc, currentCell, xIsNext} = this.state;
+    const {history, stepNumber, isStepAsc, currentCell, xIsNext} = this.props;
     const current = history[stepNumber];
     const stringStep = 'Go to move #';
     const moves = history.map((step, move) => {
@@ -156,18 +103,21 @@ class Game extends React.Component {
             </div>
           </div>
         </div>
-      </div>
+      </div> 
     );
   }
 }
 
-const mapStateToProps = (state) => ({
-  history: state.game.history,
-  stepNumber: state.game.stepNumber,
-  xIsNext: state.game.xIsNext,
-  currentCell: state.game.currentCell,
-  isStepAsc: state.game.isStepAsc,
-})
+function mapStateToProps(state) {
+  return { 
+    history: state.game.history,
+    stepNumber: state.game.stepNumber,
+    xIsNext: state.game.xIsNext,
+    currentCell: state.game.currentCell,
+    isStepAsc: state.game.isStepAsc,
+  }
+}
+
 
 const mapDispatchToProps = (dispatch) => ({
   modifiedHistory: (history, squares, i) => dispatch(ModifiedHistory(history, squares, i)),
