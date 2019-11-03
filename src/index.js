@@ -4,7 +4,10 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
-import Game from './containers/Game';
+//import Game from './containers/Game';
+import Registration from './containers/Registration/Registration';
+import MainPage from './containers/MainPage/MainPage';
+
 import * as serviceWorker from './serviceWorker';
 import rootReducer from './reducers'
 
@@ -12,7 +15,7 @@ const store = createStore(rootReducer)
 
 ReactDOM.render(
   <Provider store={store}>
-    <Game />
+    <Registration/>
   </Provider>,
   document.getElementById('root')
 )

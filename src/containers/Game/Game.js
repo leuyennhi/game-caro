@@ -3,9 +3,9 @@
 import React from 'react';
 // eslint-disable-next-line import/no-unresolved
 import{ connect } from 'react-redux';
-import Board from '../components/Board/index';
-import './Game.css';
-import {ModifiedHistory, Restart, ChooseStep, ChangeTypeSort } from '../actions/index';
+import Board from '../../components/Board/index';
+import '../style.css';
+import {ModifiedHistory, Restart, ChooseStep, ChangeTypeSort } from '../../actions/index';
 
 class Game extends React.Component {
  
@@ -78,7 +78,7 @@ class Game extends React.Component {
       status = `Next player: ${  xIsNext ? 'X' : 'O'}`;
     }
     return (
-      <div className="App">
+      <div className="body">
         <div className="App-header">
           <h2>GAME CARO</h2>
           <div className="game">
