@@ -2,6 +2,8 @@ import React from 'react';
 import { Form, Input, Select, Button, DatePicker} from 'antd';
 import 'antd/dist/antd.css';
 import '../style.css';
+import{ connect } from 'react-redux';
+import {Registration } from '../../actions/index.js'
 
 const { Option } = Select;
 
@@ -17,7 +19,13 @@ const formItemLayout = {
 };
 
 export default class Registration extends React.Component {
+  
+  registerClick() {
+  
+  }
+
   render() {
+    const {err} = this.props;
     return(
       <div className="registration-component">
         <h1>GAME CARO</h1>
@@ -56,7 +64,7 @@ export default class Registration extends React.Component {
             xs: { span: 24, offset: 0 },
             sm: { span: 16, offset: 8 },
           }}>
-              <Button type="primary" htmlType="submit" onClick>Đăng ký</Button>
+              <Button type="primary" htmlType="submit" onClick={() => this.registerClick()}>Đăng ký</Button>
             </Form.Item>
 
           </Form>
@@ -67,3 +75,4 @@ export default class Registration extends React.Component {
     );
   }
 }
+
