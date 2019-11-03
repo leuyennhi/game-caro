@@ -4,18 +4,28 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
-//import Game from './containers/Game';
+import Game from './containers/Game/Game';
 import Registration from './containers/Registration/Registration';
 import MainPage from './containers/MainPage/MainPage';
+import Login from './containers/Login/Login';
+import { Switch, Route, BrowserRouter } from 'react-router-dom'
 
 import * as serviceWorker from './serviceWorker';
 import rootReducer from './reducers'
+
 
 const store = createStore(rootReducer)
 
 ReactDOM.render(
   <Provider store={store}>
-    <Registration/>
+    <BrowserRouter>
+      <Switch>
+        <Route path="/register" exact component={Registration} />
+        <Route path="/login" exact component={Login} />
+        <Route path="/game" component={Game} />
+        <Route path="/" component={MainPage} />
+      </Switch>
+    </BrowserRouter>
   </Provider>,
   document.getElementById('root')
 )
