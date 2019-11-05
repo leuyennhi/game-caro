@@ -1,36 +1,33 @@
 /* eslint-disable import/imports-first */
 import React from 'react';
 import ReactDOM from 'react-dom';
+import thunk from 'redux-thunk';
 import './index.css';
-import { createStore } from 'redux';
+import { createStore, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
-import Game from './containers/Game/Game';
-import Registration from './containers/Registration/Registration';
-import MainPage from './containers/MainPage/MainPage';
-import Login from './containers/Login/Login';
-import { Switch, Route, BrowserRouter } from 'react-router-dom'
+import { Router } from 'react-router-dom';
+import { persistStore, persistReducer } from 'redux-persist';
+import storage from 'redux-persist/lib/storage'
+import { PersistGate } from 'redux-persist/lib/integration/react';
+import App from './app';
+import rootReducer from './reducers';
+import { history } from './helpers/helpers';
 
-import * as serviceWorker from './serviceWorker';
-import rootReducer from './reducers'
-
-
-const store = createStore(rootReducer)
+const persistConfig = {
+  key: 'root',
+  storage,
+}
+const persistedReducer = persistReducer(persistConfig, rootReducer)
+const store = createStore(persistedReducer, applyMiddleware(thunk));
+const persistor = persistStore(store);
 
 ReactDOM.render(
   <Provider store={store}>
-    <BrowserRouter>
-      <Switch>
-        <Route path="/register" exact component={Registration} />
-        <Route path="/login" exact component={Login} />
-        <Route path="/game" component={Game} />
-        <Route path="/" component={MainPage} />
-      </Switch>
-    </BrowserRouter>
+    <PersistGate loading={null} persistor={persistor}>
+      <Router history = {history}>
+          <App />
+      </Router>
+    </PersistGate>
   </Provider>,
   document.getElementById('root')
-)
-
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+);
