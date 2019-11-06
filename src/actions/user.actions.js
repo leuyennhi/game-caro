@@ -30,6 +30,17 @@ const login = ({email, password}) => {
     function failure(error) { return { type: userConstants.LOGIN_FAILURE, error } }
 }
 
+export const loginWithFBGG = (data) => {
+    // console.log('user.token', data);
+    return dispatch => {
+        localStorage.setItem('jwt_token', data.token.token);
+        dispatch(success(data.token.user));
+        history.push('/home');
+    };
+
+    function success(user) { return { type: userConstants.LOGIN_SUCCESS, user} }
+}
+
 const logout = () => {
     return dispatch => {
         dispatch({ type: userConstants.LOGOUT });
@@ -117,39 +128,10 @@ const changepass = ({_id, passpresent, password}) => {
 
 export const userActions = {
     login,
+    loginWithFBGG,
     logout,
     register,
     update,
     changepass,
+
 };
-
-// prefixed function name with underscore because delete is a reserved word in javascript
-
-/*
-export const Registration = () => async dispatch => {
-    //const response = await dataUsers.get('/users');
-    fetch('https://hw6-caro-api.herokuapp.com/user/register', {  
-      method: 'post',  
-      headers: {  
-        'Accept': 'application/json',  
-        'Content-Type': 'application/json'  
-      },  
-      body: JSON.stringify({  
-  
-  
-        displayname: document.getElementById("displayName"),  
-        dob: document.getElementById("dob"),  
-        gender: document.getElementById("gender"),  
-        password: document.getElementById("password"), 
-        email: document.getElementById("email"), 
-      })  
-    }).then((Response) => Response.json())  
-      .then((Result) => {  
-        if (Result.Status == 'Success')  
-                this.props.history.push("/Dashboard");  
-        else  
-          alert('Sorrrrrry !!!! Un-authenticated User !!!!!')  
-      })
-    dispatch({ type: 'REGISTRATRION', payload: response });
-};  
-*/

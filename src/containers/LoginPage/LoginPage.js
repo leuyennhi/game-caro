@@ -2,7 +2,7 @@
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable import/imports-first */
 import React from 'react';
-import { Form, Input, Button} from 'antd';
+import { Form, Input, Button, Icon} from 'antd';
 import 'antd/dist/antd.css';
 import '../style.css';
 import{ connect } from 'react-redux';
@@ -23,6 +23,10 @@ class LoginForm extends React.Component {
     
     componentDidMount() {
       // To disabled submit button at the beginning.
+      const token = new URL(window.location.href).searchParams.get('token');
+        if (token) {
+            this.props.loginWithFBGG(JSON.parse(token));
+      }
       this.props.form.validateFields();
     }
 
@@ -40,19 +44,28 @@ class LoginForm extends React.Component {
       this.setState({isFirstLoad:false});
     }
 
+    handleLoginFacebook = e => {
+      e.preventDefault();
+      window.location.replace('https://hw6-caro-api.herokuapp.com/login/facebook');
+    }
+
+    handleLoginGoogle = e => {
+      e.preventDefault();
+      window.location.replace('https://hw6-caro-api.herokuapp.com/login/google');
+    }
+
   render() {
     const { getFieldDecorator, getFieldsError, getFieldError, isFieldTouched } = this.props.form;
-    // const {errMessage} = this.props;
-    // Only show error after a field is touched.
-    const emailError = isFieldTouched('email') && getFieldError('email');
-    const passwordError = isFieldTouched('password') && getFieldError('password');
     const {message} = this.props;
 
+    const emailError = isFieldTouched('email') && getFieldError('email');
+    const passwordError = isFieldTouched('password') && getFieldError('password');
+    
     return (
       <div className="body-component">
         <h1>GAME CARO</h1>
         <h2>Đăng Nhập</h2>
-        { message && !this.state.isFirstLoad &&
+          {message && !this.state.isFirstLoad &&
             <div className="err-message">{message}</div>
           }
         <div className="form-component">
@@ -95,9 +108,19 @@ class LoginForm extends React.Component {
               <Button type="primary" htmlType="submit" disabled={hasErrors(getFieldsError())}>
                 Đăng nhập
               </Button>
-              
             </Form.Item>
           </Form>
+          </div>
+          <p>Bạn có thể đăng nhập với các tài khoản xã hội: </p>
+          <div className="login-button-component">
+            <Button disabled type="primary" onClick={this.handleLoginFacebook}>
+              <Icon type="facebook" theme="filled" />
+              Facebook
+            </Button>
+            <Button disabled type="danger" onClick={this.handleLoginGoogle}>
+              <Icon type="google" />
+              Google
+            </Button>
           </div>
           <p>Bạn chưa có tài khoản?<a href="/register"> Đăng ký ngay!</a></p>
       </div>
@@ -112,7 +135,8 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = (dispatch) => ({
-  login: (email, password) => dispatch(userActions.login(email,password))
+  login: (email, password) => dispatch(userActions.login(email,password)),
+  loginWithFBGG:(token) => dispatch(userActions.loginWithFBGG(token))
 });
 
 const LoginPage = (Form.create({ name: 'login' })(LoginForm));

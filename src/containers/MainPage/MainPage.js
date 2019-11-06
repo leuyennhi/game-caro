@@ -1,6 +1,6 @@
 import React from 'react';
 import 'antd/dist/antd.css';
-import { Button} from 'antd';
+import { Button, Avatar, Row} from 'antd';
 import {connect} from 'react-redux';
 import {userActions} from '../../actions/user.actions';
 import '../style.css';
@@ -15,7 +15,9 @@ class MainPage extends React.Component {
     return (
       <div className="body-component">
         <h1>GAME CARO</h1>
-
+        <div className="avatar-component">
+          <Avatar shape="square" icon="user" size={150}/>
+        </div>
         <h2>{user.displayname}</h2>
         <div className="btns-component">
           <Button.Group size='default'>

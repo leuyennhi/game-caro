@@ -2,7 +2,7 @@
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable import/imports-first */
 import React from 'react';
-import { Form, Input, Button} from 'antd';
+import { Form, Input, Button, Avatar} from 'antd';
 import 'antd/dist/antd.css';
 import '../style.css';
 import{ connect } from 'react-redux';
@@ -72,7 +72,10 @@ class RegistrationForm extends React.Component {
         { message && !this.state.isFirstLoad &&
             <div className="err-message">{message}</div>
         }
-        <div className="form-component">
+        <div className="avatar-component">
+          <Avatar shape="square" icon="user" size={150}/>
+        </div>
+        <div>
           <Form labelCol = {{
                   xs: { span: 24},
                   sm: { span: 5 },
@@ -81,7 +84,8 @@ class RegistrationForm extends React.Component {
                   xs: { span: 24 },
                   sm: { span: 12 },
                 }}
-                onSubmit={this.handleSubmit} > 
+                onSubmit={this.handleSubmit} 
+                className="form-component"> 
             <Form.Item label="Tên hiển thị" validateStatus={displayNameError ? 'error' : ''} help={displayNameError || ''}>
               {getFieldDecorator('displayName', {
                 rules: [

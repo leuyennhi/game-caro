@@ -2,12 +2,13 @@
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable import/imports-first */
 import React from 'react';
-import { Form, Input, Button} from 'antd';
+import { Form, Input, Button, Avatar} from 'antd';
 import 'antd/dist/antd.css';
 import '../style.css';
 import{ connect } from 'react-redux';
 import {userActions} from '../../actions/user.actions'
 import {history} from '../../helpers/helpers';
+import { validate } from '@babel/types';
 
 function hasErrors(fieldsError) {
   return Object.keys(fieldsError).some(field => fieldsError[field]);
@@ -18,6 +19,7 @@ class UpdateInfoForm extends React.Component {
       super(props);
       this.state = {
         isFirstLoad: true,
+        haveChange: false,
       };
     }
 
@@ -43,21 +45,13 @@ class UpdateInfoForm extends React.Component {
       this.setState({isFirstLoad: false})
     }
 
-  compareToFirstPassword = (rule, value, callback) => {
-    const { form } = this.props;
-    if (value && value !== form.getFieldValue('password')) {
-      callback('Two passwords that you enter is inconsistent!');
+    compareToPastName = () => {
+    const { form, user } = this.props;
+    if (form.getFieldValue('displayName') !== user.displayname) {
+      this.setState({haveChange: true});
     } else {
-      callback();
+      this.setState({haveChange: false});
     }
-  };
-
-  validateToNextPassword = (rule, value, callback) => {
-    const { form } = this.props;
-    if (value && this.state.confirmDirty) {
-      form.validateFields(['confirm'], { force: true });
-    }
-    callback();
   };
 
   render() {
@@ -70,12 +64,16 @@ class UpdateInfoForm extends React.Component {
       <div className="body-component">
         <h1>GAME CARO</h1>
         <h2>Cập nhật thông tin</h2>
+        <div className="avatar-component">
+          <Avatar shape="square" icon="user" size={150}/>
+        </div>
         { errMessage && !this.state.isFirstLoad &&
             <div className="err-message">{errMessage}</div>
         }
         { successMessage && !this.state.isFirstLoad &&
             <div className="success-message">{successMessage}</div>
         }
+        
         <div className="form-component">
           <Form onSubmit={this.handleSubmit}> 
             <Form.Item labelCol = {{
@@ -92,6 +90,9 @@ class UpdateInfoForm extends React.Component {
                     required: true,
                     message: 'Tên hiển thị không được để trống!',
                   },
+                  {
+                    validator: this.compareToPastName,
+                  },
                 ],
               })(<Input />)} 
             </Form.Item>
@@ -99,7 +100,7 @@ class UpdateInfoForm extends React.Component {
             <Form.Item>
                 <div className="btn-update-component">
                     <Button.Group>
-                    <Button type="primary" htmlType="submit" disabled={hasErrors(getFieldsError())}>
+                    <Button type="primary" htmlType="submit" disabled={hasErrors(getFieldsError()) || !this.state.haveChange}>
                         Cập nhật
                     </Button>
                     <Button type="primary" onClick={() => history.push("/changepass")}>

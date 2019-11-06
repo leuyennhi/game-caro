@@ -96,6 +96,7 @@
 .btn-component {
   margin: 0px 20px 0 0;
 }
+
 .btns-component {
   text-align: center;
   margin: 0 0 20px 0;
@@ -133,6 +134,23 @@
   line-height: 35px;
   padding-left: 10px;
 }
+
+.login-button-component {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin: 10px 40% 10px 40%;
+  text-align: center;
+}
+
+.avatar-component {
+  text-align: center;
+  margin: 0 0 20px 0;
+  text-align: center;
+  align-items: center;
+}
+
 h1, h2, h5, p{
   text-align: center;
 }
