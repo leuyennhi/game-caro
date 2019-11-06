@@ -107,7 +107,7 @@ class LoginForm extends React.Component {
 
 function mapStateToProps(state) {
   return { 
-    message: state.authentication.message
+    message: state.user.message
   };
 }
 

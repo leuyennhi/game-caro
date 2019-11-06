@@ -13,7 +13,7 @@ function hasErrors(fieldsError) {
   return Object.keys(fieldsError).some(field => fieldsError[field]);
 }
 
-class UpdateInfoForm extends React.Component {
+class ChangePassForm extends React.Component {
     constructor(props) {
       super(props);
       this.state = {
@@ -23,9 +23,7 @@ class UpdateInfoForm extends React.Component {
 
     componentDidMount() {
       // To disabled submit button at the beginning.
-      const { form, user} = this.props;
-
-      form.setFieldsValue({displayName: user.displayname});
+      const { form} = this.props;
       form.validateFields();
     }
 
@@ -36,9 +34,10 @@ class UpdateInfoForm extends React.Component {
       
       const values = form.getFieldsValue();
 
-      this.props.update({
+      this.props.changepass({
           _id: user._id,
-          displayname: values.displayName
+          passpresent: values.passpresent,
+          password: values.password
       });
       this.setState({isFirstLoad: false})
     }
@@ -64,12 +63,14 @@ class UpdateInfoForm extends React.Component {
     const { getFieldDecorator, getFieldsError, getFieldError, isFieldTouched} = this.props.form;
     const {errMessage, successMessage} = this.props;
 
-    const displayNameError = isFieldTouched('displayName') && getFieldError('displayName');
+    const passpresentError = isFieldTouched('passpresent' && getFieldError('passpresent'));
+    const passwordError = isFieldTouched('password') && getFieldError('password');
+    const confirmError = isFieldTouched('confirm') && getFieldError('confirm');
 
     return (
       <div className="body-component">
         <h1>GAME CARO</h1>
-        <h2>Cập nhật thông tin</h2>
+        <h2>Đổi mật khẩu</h2>
         { errMessage && !this.state.isFirstLoad &&
             <div className="err-message">{errMessage}</div>
         }
@@ -77,7 +78,48 @@ class UpdateInfoForm extends React.Component {
             <div className="success-message">{successMessage}</div>
         }
         <div className="form-component">
-          <Form onSubmit={this.handleSubmit}> 
+          <Form onSubmit={this.handleSubmit}>
+          <Form.Item labelCol = {{
+                  xs: { span: 24},
+                  sm: { span: 5 },
+                }}
+                wrapperCol = {{
+                  xs: { span: 24 },
+                  sm: { span: 12 },
+                }}
+                label="Mật khẩu hiện tại" hasFeedback validateStatus={passpresentError ? 'error' : ''} help={passpresentError || ''}>
+              {getFieldDecorator('passpresent', {
+                rules: [
+                  {
+                    required: true,
+                    message: 'Vui lòng nhập mật khẩu hiện tại!',
+                  },
+                ],
+              })(<Input.Password />)}
+            </Form.Item>
+
+          <Form.Item labelCol = {{
+                  xs: { span: 24},
+                  sm: { span: 5 },
+                }}
+                wrapperCol = {{
+                  xs: { span: 24 },
+                  sm: { span: 12 },
+                }}
+                label="Mật khẩu mới" hasFeedback validateStatus={passwordError ? 'error' : ''} help={passwordError || ''}>
+              {getFieldDecorator('password', {
+                rules: [
+                  {
+                    required: true,
+                    message: 'Vui lòng nhập mật khẩu mới!',
+                  },
+                  {
+                    validator: this.validateToNextPassword,
+                  },
+                ],
+              })(<Input.Password />)}
+            </Form.Item>
+
             <Form.Item labelCol = {{
                   xs: { span: 24},
                   sm: { span: 5 },
@@ -85,24 +127,25 @@ class UpdateInfoForm extends React.Component {
                 wrapperCol = {{
                   xs: { span: 24 },
                   sm: { span: 12 },
-                }} label="Tên hiển thị" validateStatus={displayNameError ? 'error' : ''} help={displayNameError || ''}>
-              {getFieldDecorator('displayName', {
+                }}
+                label="Nhập lại mật khẩu" hasFeedback validateStatus={confirmError ? 'error' : ''} help={confirmError || ''}>
+              {getFieldDecorator('confirm', {
                 rules: [
                   {
                     required: true,
-                    message: 'Tên hiển thị không được để trống!',
+                    message: 'Vui lòng nhập lại mật khẩu!',
+                  },
+                  {
+                    validator: this.compareToFirstPassword,
                   },
                 ],
-              })(<Input />)} 
+              })(<Input.Password/>)}
             </Form.Item>
-            
+
             <Form.Item>
-                <div className="btn-update-component">
+                <div className="btn-changepass-component">
                     <Button.Group>
                     <Button type="primary" htmlType="submit" disabled={hasErrors(getFieldsError())}>
-                        Cập nhật
-                    </Button>
-                    <Button type="primary" onClick={() => history.push("/changepass")}>
                         Đổi mật khẩu
                     </Button>
                     <Button type="primary" onClick={() => history.push("/home")}>
@@ -122,14 +165,14 @@ function mapStateToProps(state) {
   return { 
     errMessage: state.user.errMessage,
     successMessage: state.user.successMessage,
-    user: state.user.user,
+    user: state.user.user
   };
 }
 
 const mapDispatchToProps = (dispatch) => ({
-  update: ({_id, displayname}) => dispatch(userActions.update({_id, displayname}))
+  changepass: ({_id, passpresent, password}) => dispatch(userActions.changepass({_id, passpresent, password}))
 });
 
-const UpdateInfoPage = (Form.create({ name: 'update' })(UpdateInfoForm));
+const ChangePassPage = (Form.create({ name: 'changepass' })(ChangePassForm));
 
-export default connect(mapStateToProps, mapDispatchToProps)(UpdateInfoPage)
+export default connect(mapStateToProps, mapDispatchToProps)(ChangePassPage)

@@ -12,6 +12,7 @@
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: black;
+  font-family: -apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Hiragino Sans GB','Microsoft YaHei','Helvetica Neue',Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';
 }
 
 @keyframes App-logo-spin {
@@ -24,30 +25,6 @@
   }
 }
 
-.status-component {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  width: 650px;
-  margin: 0 0 20px 0;
-}
-
-.button {
-  height: 30px;
-  width: 100px;
-  color: black;
-  background: transparent;
-  font-weight: bold;
-  font-size: 16px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
-}
-
-.restart-button:hover {
-  color: #eb0808;
-}
-
 .game {
   display: flex;
   justify-content: center;
@@ -57,12 +34,27 @@
   margin-left: 20px;
 }
 
+.game-button-component {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  width: 180px;
+  height: 150px;
+  margin: 35px 0 0 0;
+  padding: 0 30px 0 0;
+}
 .step-component {
-  margin: 30px 0 0 20px;
+  margin: 35px 0 0 10px;
+  text-align: center;
 }
 
 .step-component li {
   font-size: 14px;
+}
+
+.sort-button {
+  text-align: center;
 }
 
 .step-button {
@@ -99,7 +91,6 @@
   margin-right: 0;
   background-size: cover;
   background-color: whitesmoke;
-  
 }
 
 .btn-component {
@@ -108,10 +99,16 @@
 .btns-component {
   text-align: center;
   margin: 0 0 20px 0;
+  text-align: center;
+  align-items: center;
 }
 
 .btn-update-component {
   padding: 0 0 0 22%;
+}
+
+.btn-changepass-component {
+  padding: 0 0 0 28%;
 }
 
 
@@ -136,6 +133,6 @@
   line-height: 35px;
   padding-left: 10px;
 }
-h1, h2, p{
+h1, h2, h5, p{
   text-align: center;
 }

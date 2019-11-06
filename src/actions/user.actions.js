@@ -10,7 +10,7 @@ const login = ({email, password}) => {
 
         setTimeout(() => {
             axios
-                .post('http://localhost:4500/user/login', {
+                .post('https://hw6-caro-api.herokuapp.com/user/login', {
                     email,
                     password,
                 })
@@ -65,18 +65,17 @@ const register = ({email,password,displayname}) => {
 }
 
 
-const update = (displayname) => {
+const update = ({_id, displayname}) => {
     return dispatch => {
         dispatch(request());
         setTimeout(() => {
             axios
                 .post('https://hw6-caro-api.herokuapp.com/user/update', {
+                    _id,
                     displayname
                 })
-                // eslint-disable-next-line no-unused-vars
                 .then( result => { 
-                        dispatch(success(result.data.message));
-                        history.push('/home');
+                        dispatch(success(result.data.message, result.data.user));
                     }
                 )
                 .catch(error => {
@@ -86,22 +85,23 @@ const update = (displayname) => {
     };
 
     function request() { return { type: userConstants.UPDATE_REQUEST} }
-    function success(message) { return { type: userConstants.UPDATE_SUCCESS, message } }
+    function success(message, user) { return { type: userConstants.UPDATE_SUCCESS, message, user } }
     function failure(error) { return { type: userConstants.UPDATE_FAILURE, error } }
 }
 
-const changepass = (password) => {
+const changepass = ({_id, passpresent, password}) => {
     return dispatch => {
         dispatch(request());
         setTimeout(() => {
             axios
                 .post('https://hw6-caro-api.herokuapp.com/user/changepass', {
+                    _id,
+                    passpresent,
                     password
                 })
                 // eslint-disable-next-line no-unused-vars
                 .then( result => { 
                         dispatch(success(result.data.message));
-                        history.push('/home');
                     }
                 )
                 .catch(error => {
@@ -110,9 +110,9 @@ const changepass = (password) => {
         }, 1000)
     };
 
-    function request() { return { type: userConstants.UPDATE_REQUEST} }
-    function success(message) { return { type: userConstants.UPDATE_SUCCESS, message } }
-    function failure(error) { return { type: userConstants.UPDATE_FAILURE, error } }
+    function request() { return { type: userConstants.CHANGEPASS_REQUEST} }
+    function success(message) { return { type: userConstants.CHANGEPASS_SUCCESS, message } }
+    function failure(error) { return { type: userConstants.CHANGEPASS_FAILURE, error } }
 }
 
 export const userActions = {

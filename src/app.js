@@ -8,6 +8,7 @@ import MainPage from './containers/MainPage/MainPage';
 import RegisterPage from './containers/RegisterPage/RegisterPage';
 import LoginPage from './containers/LoginPage/LoginPage';
 import UpdateInfoPage from './containers/UpdateInfo/UpdateInfo';
+import ChangePassPage from './containers/ChangePass/ChangePass';
 
 const App = (props)=> {
   const {loggedIn} = props;
@@ -24,6 +25,9 @@ const App = (props)=> {
       <Route exact path="/update"> 
         {loggedIn ? <UpdateInfoPage/> : <Redirect to="/login" />}
       </Route>
+      <Route exact path="/changepass"> 
+        {loggedIn ? <ChangePassPage/> : <Redirect to="/login" />}
+      </Route>
       <Route exact path="/game">
         {loggedIn ? <Game /> : <Redirect to="/login" />}
       </Route>
@@ -33,7 +37,7 @@ const App = (props)=> {
 }
 
 const mapStateToProps = state => ({
-    loggedIn: state.authentication.loggedIn
+    loggedIn: state.user.loggedIn
 })
 
 export default connect(mapStateToProps)(App)

@@ -11,6 +11,7 @@ import {history} from '../../helpers/helpers';
 class MainPage extends React.Component {
   render() {
     const {user, logout} = this.props;
+
     return (
       <div className="body-component">
         <h1>GAME CARO</h1>
@@ -19,8 +20,8 @@ class MainPage extends React.Component {
         <div className="btns-component">
           <Button.Group size='default'>
               <Button type="primary" onClick={() => history.push("/update")}>Chỉnh sửa thông tin</Button>
-              <Button type="primary">Chơi với máy</Button>
-              <Button type="primary">Tìm người chơi</Button>
+              <Button type="primary" onClick={() => history.push("/game")}>Chơi với máy</Button>
+              <Button type="primary" disabled>Tìm người chơi</Button>
               <Button type="primary" onClick={() => logout()}>Đăng xuất</Button>
           </Button.Group>
         </div>
@@ -32,7 +33,7 @@ class MainPage extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-  user: state.authentication.user
+  user: state.user.user
 })
 
 const mapDispatchToProps = (dispatch) => ({

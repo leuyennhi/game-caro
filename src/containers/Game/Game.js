@@ -3,14 +3,39 @@
 import React from 'react';
 // eslint-disable-next-line import/no-unresolved
 import{ connect } from 'react-redux';
+import 'antd/dist/antd.css';
+import { Button} from 'antd';
 import Board from '../../components/Board/index';
 import '../style.css';
 import {ModifiedHistory, Restart, ChooseStep, ChangeTypeSort } from '../../actions/index';
+import {history as History} from '../../helpers/helpers';
 
 class Game extends React.Component {
+
+  handleHostPlay = () => {
+    const {history, stepNumber, currentCell} = this.props; 
+    const historyToSave = history.slice(0, stepNumber + 1);
+    const current = historyToSave[historyToSave.length - 1];
+    const currentSquares = current.squares.slice();
+
+    if (calculateWinner(currentSquares, currentCell)) {
+      return;
+    }
+
+    let index = -1;
+    while (true) {
+      index = Math.floor(Math.random() * 400);
+      if (currentSquares[index] === null)
+        break;
+    }
+
+    currentSquares[index] = 'O';
+
+    this.props.modifiedHistory(historyToSave, currentSquares, index);
+  }
  
   handleClick(i) {
-    const {history, stepNumber, xIsNext, currentCell} = this.props; 
+    const {history, stepNumber, currentCell} = this.props; 
     const historyToSave = history.slice(0, stepNumber + 1);
     const current = historyToSave[historyToSave.length - 1];
     const currentSquares = current.squares.slice();
@@ -18,9 +43,13 @@ class Game extends React.Component {
     if (calculateWinner(currentSquares, currentCell) || currentSquares[i]) {
       return;
     }
-    currentSquares[i] = xIsNext ? 'X' : 'O';
+    currentSquares[i] = 'X';
 
-    this.props.modifiedHistory(historyToSave, currentSquares, i); 
+    this.props.modifiedHistory(historyToSave, currentSquares, i);
+    setTimeout(() => {
+      this.handleHostPlay()
+    }, 1000);
+    
   }
 
   restartClick() {
@@ -42,7 +71,7 @@ class Game extends React.Component {
   render() {
     const {history, stepNumber, isStepAsc, currentCell, xIsNext} = this.props;
     const current = history[stepNumber];
-    const stringStep = 'Go to move #';
+    const stringStep = 'Trở về bước #';
     const moves = history.map((step, move) => {
       let moveNum = 0;
 
@@ -57,7 +86,7 @@ class Game extends React.Component {
 
       const desc = move ?
         stringStep + moveNum :
-        'Go to game start';
+        'Trở về bắt đầu';
       return (
         // eslint-disable-next-line react/no-array-index-key
         <li key={move}>
@@ -68,28 +97,41 @@ class Game extends React.Component {
 
     const winner = calculateWinner(current.squares, currentCell);
 
+    if(document.getElementById(current.historyCell) !== null) {
+      const board = document.getElementsByClassName('square');
+      Array.prototype.forEach.call(board, (item) => item.removeAttribute('style'));
+      document.getElementById(current.historyCell).style.color = "#1890ff";
+    }
+
     let status;
     if (winner) {
-      status = `Winner: ${winner.winner}`;
+      
+      status = winner.winner === 'X' ? 'Chúc mừng! Bạn đã chiến thắng!' : 'Tiếc quá! Bạn đã thua cuộc rồi!';
       winner.result.forEach(element => {
-        document.getElementById(element).style.color = "#eb0808";
+        if(document.getElementById(element) !== null) {
+          document.getElementById(element).style.color = "#e81010";
+        }
       });
-    } else {
-      status = `Next player: ${  xIsNext ? 'X' : 'O'}`;
+    }
+    else {
+        status = xIsNext ? 'Đến lượt của bạn!' : 'Đến lượt của máy!' ;
     }
     return (
-      <div className="body">
+      <div className="body-component">
         <div className="App-header">
           <h2>GAME CARO</h2>
           <div className="game">
+            <div className="game-button-component">
+              <h4>MENU</h4>
+              <Button block type="primary" onClick={() => this.restartClick()}>
+                Chơi lại
+              </Button>
+              <Button block type="primary" onClick={() => History.push("/home")}>
+              Trở về trang chủ
+              </Button>
+            </div>
             <div>
-              <div className="status-component">
-                <div>{status}</div>
-                <button type="button" className="button" onClick={() => this.restartClick()}>
-                  Restart
-                </button>
-              </div>
-
+              <h5>{status}</h5>
               <div>
                 <Board
                   squares={current.squares}
@@ -98,7 +140,7 @@ class Game extends React.Component {
               </div>
             </div>
             <div className="step-component">
-              <button type="button" className="button" onClick={() => this.sortStep()}> {isStepAsc ? "Asc" : "Desc"} </button>
+              <Button type="primary" className="sort-button" onClick={() => this.sortStep()}> {isStepAsc ? "Lượt đi giảm dần" : "Lượt đi tăng dần"} </Button>
               <ol>{moves}</ol>
             </div>
           </div>
@@ -115,6 +157,7 @@ function mapStateToProps(state) {
     xIsNext: state.game.xIsNext,
     currentCell: state.game.currentCell,
     isStepAsc: state.game.isStepAsc,
+    user: state.user.user
   }
 }
 
